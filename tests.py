@@ -4,7 +4,7 @@ from gofile_downloader import GoFile
 
 
 global config
-config = __import__("json").load(open("config.json"))
+config = json.load(open("config.json"))
 
 
 def main(gofile_url: str, password: str = ''):
