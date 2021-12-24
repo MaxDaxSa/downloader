@@ -1,5 +1,7 @@
 import os
+import ssl
 import json
+import hashlib
 import http.client as http_client
 import urllib.request as requests
 import urllib.error as requests_error
@@ -35,15 +37,22 @@ class GoFile:
             raise ValueError("The API key must be a string.")
         self.api_key = api_key
 
-    def fetch_resources(self, url: str) -> list:
-        if not isinstance(url, str) or len(url) < 1:
+    def fetch_resources(self, url: str, password: str = None) -> list:
+        if not isinstance(url, str) or url == '':
             raise ValueError("The URL must be a string.")
+
+        if not isinstance(password, str):
+            raise ValueError("The password must be a string.")
 
         content_id = url[len("https://gofile.io/d/"):]
         assert len(
             content_id) > 0, "An error occured while extracting the Content ID from '" + url + "'."
 
         url = "https://api.gofile.io/getContent?contentId=" + content_id + "&token=" + self.api_key + "&websiteToken=websiteToken&cache=true"
+
+        if password is not None and password != '':
+            password = hashlib.sha256(password.encode()).hexdigest()
+            url += "&password=" + password
 
         http = requests.Request(url, headers={
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0",
@@ -58,9 +67,9 @@ class GoFile:
             "Sec-Fetch-Site": "same-site",
             "Pragma": "no-cache",
             "Cache-Control": "no-cache"
-        })
+        }, unverifiable=True)
 
-        response = requests.urlopen(http)
+        response = requests.urlopen(http, context=ssl._create_unverified_context())
         data = response.read()
         response.close()
 
