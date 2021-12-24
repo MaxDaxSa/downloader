@@ -13,10 +13,8 @@ def is_video(url: str) -> bool:
 
 
 class GoFile:
-    def __init__(self, api_key: str) -> None:
-        if not isinstance(api_key, str) or len(api_key) < 1:
-            raise ValueError("The API key must be a string.")
-        self.api_key = api_key
+    def __init__(self) -> None:
+        self.api_key = self.__get_api_key()
 
     def fetch_resources(self, url: str, password: str = None) -> list:
         if not isinstance(url, str) or url == '':
@@ -91,9 +89,9 @@ class GoFile:
             "Pragma": "no-cache",
             "Cache-Control": "no-cache",
         }
+
         try:
             request_file(url, filename, headers=headers)
-
         except requests_error.ContentTooShortError:
             data = request(url)
 
@@ -103,3 +101,19 @@ class GoFile:
         except requests_error.HTTPError as e:
             print(url)
             raise e
+
+    @staticmethod
+    def __get_api_key() -> str:
+
+        # Gets a new account token
+        response = request(url="https://api.gofile.io/createAccount")
+        data = json.loads(response)
+        api_token = data["data"]["token"]
+
+        # Activate the new token
+        response = request(url="https://api.gofile.io/getAccountDetails?token=" + api_token)
+        data = json.loads(response)
+        if data["status"] != 'ok':
+            raise Exception("The account was not successfully activated.")
+
+        return api_token

@@ -22,7 +22,7 @@ def main(gofile_url: str, password: str = ''):
         json.dump([], open(meta_output, 'a'))
 
     # Dumps out media links.
-    api = GoFile(config["API_KEY"])
+    api = GoFile()
 
     resources = json.load(open(meta_output))
     if len(resources) == 0:
