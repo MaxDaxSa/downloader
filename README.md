@@ -14,6 +14,7 @@ Second, oh wait... There is not a second part, because it does not require any e
 Open up the ``config.json`` file and fill out fields.
 
 ``URL`` : It's the URL of the page you wish to download.
+
 ``PASSWORD`` (optional) : It's the password of the folder. Keep it empty if the password is not required.
 
 Now, you can figure out by yourself what to put in these quotes to download all the leaks you want.
